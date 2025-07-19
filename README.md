@@ -29,7 +29,7 @@ A clean and simple weather application built using **React.js** and the **OpenWe
 
 ## 📷 Screenshot
 
-![Weather App Screenshot](./screenshot.png)
+(https://github.com/user-attachments/assets/c9653936-1b39-4618-9508-a2b555ab72fa)
 
 ---
 
