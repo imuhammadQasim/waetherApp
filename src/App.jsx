@@ -1,17 +1,20 @@
 // WeatherApp.jsx
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./App.css";
 
 const WeatherApp = () => {
   const [input, setInput] = useState("");
   const [weatherData, setWeatherData] = useState(null);
-
+  const inputRef = useRef(null)
   const apiKey = "84b79da5e5d7c92085660485702f4ce8";
 
   // Default city: Lahore
   useEffect(() => {
     fetchWeatherByCity(input);
 
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
   }, []);
 
   const kelvinToCelsius = (k) => Math.round(k - 273.15);
@@ -66,6 +69,7 @@ const WeatherApp = () => {
         {/* Search Bar */}
         <div className="flex items-center gap-2 mb-6">
           <input
+            ref={inputRef}
             type="text"
             placeholder="Enter city name..."
             className="flex-1 px-4 py-2 rounded-md border border-gray-300 focus:ring-2 focus:ring-blue-400 focus:outline-none"
@@ -136,12 +140,12 @@ const WeatherApp = () => {
             </div>
           </div>
         )}
-        <p class="text-center text-sm text-gray-600 mt-8">
+        <p className="text-center text-sm text-gray-600 mt-8">
           Made with
-          <span class="inline-block animate-ping-slow text-red-500 mx-1">
+          <span className="inline-block animate-ping-slow text-red-500 mx-1">
             ❤️
           </span>
-          by <span class="font-semibold text-gray-800">Muhammad Qasim</span>
+          by <span className="font-semibold text-gray-800">Muhammad Qasim</span>
         </p>
       </div>
 
