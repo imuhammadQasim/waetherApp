@@ -1,5 +1,5 @@
 // WeatherApp.jsx
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useTransition } from "react";
 import "./App.css";
 
 const WeatherApp = () => {
@@ -7,20 +7,22 @@ const WeatherApp = () => {
   const [weatherData, setWeatherData] = useState(null);
   const inputRef = useRef(null)
   const apiKey = "84b79da5e5d7c92085660485702f4ce8";
+  const [loading, setLoading] = useState(false)
 
   // Default city: Lahore
   useEffect(() => {
     fetchWeatherByCity(input);
 
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   }, []);
 
   const kelvinToCelsius = (k) => Math.round(k - 273.15);
   const windSpeedKmH = (mps) => (mps * 3.6).toFixed(1);
 
   const fetchWeatherByCity = async (cityName) => {
+     setLoading(true); 
     try {
       // Step 1: Get coordinates using geocoding
       const ipRes = await fetch("https://api.ipify.org?format=json");
@@ -29,14 +31,14 @@ const WeatherApp = () => {
       const locRes = await fetch(`https://ipapi.co/${ipData.ip}/json/`);
       const locData = await locRes.json();
 
-      console.log("User City:", locData.city);
-      console.log("Country:", locData.country_name);
+      // console.log("User City:", locData.city);
+      // console.log("Country:", locData.country_name);
 
       const geoRes = await fetch(
         `https://api.openweathermap.org/geo/1.0/direct?q=${cityName || locData.city}&limit=1&appid=${apiKey}`
       );
       const geoData = await geoRes.json();
-      console.log(geoData);
+      // console.log(geoData);
       if (!geoData.length) {
         alert("City not found!");
         return;
@@ -53,6 +55,9 @@ const WeatherApp = () => {
     } catch (err) {
       console.error("Error fetching weather:", err);
     }
+    finally{
+       setLoading(false); 
+    }
   };
 
   const iconUrl = weatherData?.weather?.[0]?.icon
@@ -60,8 +65,8 @@ const WeatherApp = () => {
     : "";
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center px-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
+    <div className="min-h-screen  bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center px-4">
+      <div className="bg-white relative rounded-2xl shadow-2xl p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold text-center text-blue-800 mb-6">
           🌤️ Weather Dashboard
         </h1>
@@ -83,13 +88,14 @@ const WeatherApp = () => {
           />
           <button
             className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition cursor-pointer"
-            onClick={() => fetchWeatherByCity(input)}
+            onClick={() => fetchWeatherByCity(input)} 
           >
             Search
           </button>
         </div>
 
         {/* Weather Info */}
+        {loading ? <img src="https://i.gifer.com/4V0b.gif" alt="Loading..." width={100} className="mx-auto absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" /> : null}
         {weatherData && (
           <div className="bg-blue-50 rounded-xl p-6 text-center shadow-inner">
             <h2 className="text-2xl font-semibold text-blue-700 mb-2">
@@ -122,7 +128,6 @@ const WeatherApp = () => {
             </p>
           </div>
         )}
-
         {/* Extra Info */}
         {weatherData && (
           <div className="mt-6 grid grid-cols-3 gap-4 text-sm text-gray-700 text-center">
